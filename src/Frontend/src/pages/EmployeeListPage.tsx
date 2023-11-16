@@ -14,25 +14,14 @@ import {
     tableCellClasses,
   } from "@mui/material";
   import { useEffect, useState } from "react";
-  
-  interface EmployeeListQuery {
-    id: number;
-    firstName: string;
-    lastName: string; 
-    address: string;
-    email: string;
-    phone: string;
-  }
-
-  interface IFilter {
-    firstName: string, 
-    lastName: string
-  }
+import { downloadFile } from "../lib/utils";
+import { EmployeeListFilter, EmployeeListQuery } from "../types";
+ 
   
   export default function EmployeeListPage() {
-    const [list, setList] = useState<EmployeeListQuery[]>([]);
+    const [employees, setEmployees] = useState<EmployeeListQuery[]>([]);
 
-    const [filter, setFilter] = useState<IFilter>({
+    const [filter, setFilter] = useState<EmployeeListFilter>({
       firstName: "",
       lastName: ""
     })
@@ -43,7 +32,7 @@ import {
       try {
         const res = await fetch(url)
         const data = await res.json()
-        setList(data as EmployeeListQuery[])
+        setEmployees(data as EmployeeListQuery[])
         
       } catch (error) {
         console.log(error)
@@ -61,16 +50,16 @@ import {
         [e.target.name]: e.target.value
       })
     }
-  console.log(filter)
+
     return (
       <>
         <Typography variant="h4" sx={{ textAlign: "center", mt: 4, mb: 4 }}>
           Employees
         </Typography>
   
-        <TableContainer component={Paper}>
-          <Box padding={2}>
-            <Typography variant="subtitle2" gutterBottom >
+        <Box  display={"flex"} justifyContent={"space-between"} alignItems={"end"} paddingY={2}>
+          <Box>
+          <Typography variant="subtitle2" gutterBottom >
             Filter Employees
           </Typography>
           <Box display={"flex"} gap={2}>
@@ -79,6 +68,10 @@ import {
             <Button size="large" variant="contained" onClick={() => getEmployees("filtered")}>Search</Button>
           </Box>
           </Box>
+          <Button variant="outlined" onClick={() => downloadFile(employees)}>Export</Button>
+        </Box>
+        <TableContainer component={Paper}>
+          
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
@@ -89,15 +82,15 @@ import {
               </TableRow>
             </TableHead>
             <TableBody>
-              {list.map((row) => (
+              {employees.map((employee) => (
                 <TableRow
-                  key={row.id}
+                  key={employee.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell>{row.firstName} {row.lastName}</TableCell>
-                  <TableCell>{row.address}</TableCell>
-                  <TableCell>{row.email}</TableCell>
-                  <TableCell>{row.phone}</TableCell>
+                  <TableCell>{employee.firstName} {employee.lastName}</TableCell>
+                  <TableCell>{employee.address}</TableCell>
+                  <TableCell>{employee.email}</TableCell>
+                  <TableCell>{employee.phone}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
