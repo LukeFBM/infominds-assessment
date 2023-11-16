@@ -11,3 +11,11 @@ export interface EmployeeListQuery {
     firstName: string, 
     lastName: string
   }
+
+  export interface SupplierListQuery {
+    id: number;
+    name: string;
+    address: string;
+    email: string;
+    phone: string;
+  }

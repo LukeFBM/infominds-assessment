@@ -11,26 +11,23 @@ import {
   tableCellClasses,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-
-interface SupplierListQuery {
-  id: number;
-  name: string;
-  address: string;
-  email: string;
-  phone: string;
-}
+import { SupplierListQuery } from "../types";
 
 export default function SupplierListPage() {
-  const [list, setList] = useState<SupplierListQuery[]>([]);
+  const [suppliers, setSuppliers] = useState<SupplierListQuery[]>([]);
+
+  const getSuppliers = async () => {
+    try {
+      const res = await fetch("/api/suppliers/list"); 
+      const data = await res.json()
+      setSuppliers(data as SupplierListQuery[])
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
-    fetch("/api/suppliers/list")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setList(data as SupplierListQuery[]);
-      });
+    getSuppliers()
   }, []);
 
   return (
@@ -50,15 +47,15 @@ export default function SupplierListPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {list.map((row) => (
+            {suppliers.map((supplier) => (
               <TableRow
-                key={row.id}
+                key={supplier.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.address}</TableCell>
-                <TableCell>{row.email}</TableCell>
-                <TableCell>{row.phone}</TableCell>
+                <TableCell>{supplier.name}</TableCell>
+                <TableCell>{supplier.address}</TableCell>
+                <TableCell>{supplier.email}</TableCell>
+                <TableCell>{supplier.phone}</TableCell>
               </TableRow>
             ))}
           </TableBody>
