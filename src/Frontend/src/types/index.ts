@@ -19,3 +19,17 @@ export interface EmployeeListQuery {
     email: string;
     phone: string;
   }
+
+  export interface CustomerListQuery {
+    id: number;
+    name: string;
+    iban: string; 
+    address: string;
+    email: string;
+    phone: string;
+  }
+
+ export interface CustomerListFilter {
+    name: string, 
+    email: string
+  }
