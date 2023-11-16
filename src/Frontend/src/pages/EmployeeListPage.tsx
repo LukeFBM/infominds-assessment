@@ -1,4 +1,6 @@
 import {
+  Box,
+    Button,
     Paper,
     Table,
     TableBody,
@@ -6,6 +8,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
     Typography,
     styled,
     tableCellClasses,
@@ -20,20 +23,45 @@ import {
     email: string;
     phone: string;
   }
+
+  interface IFilter {
+    firstName: string, 
+    lastName: string
+  }
   
   export default function EmployeeListPage() {
     const [list, setList] = useState<EmployeeListQuery[]>([]);
+
+    const [filter, setFilter] = useState<IFilter>({
+      firstName: "",
+      lastName: ""
+    })
   
+    const getEmployees = async (type: "default" | "filtered" = "default") => {
+      const baseUrl = "/api/employees/list"
+      const url = type === "filtered" ?  `${baseUrl}?FirstName=${filter.firstName}&LastName=${filter.lastName}` : baseUrl
+      try {
+        const res = await fetch(url)
+        const data = await res.json()
+        setList(data as EmployeeListQuery[])
+        
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
     useEffect(() => {
-    fetch("/api/employees/list")
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          setList(data as EmployeeListQuery[]);
-        });
+    getEmployees()
     }, []);
-  
+
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFilter({
+        ...filter, 
+        [e.target.name]: e.target.value
+      })
+    }
+  console.log(filter)
     return (
       <>
         <Typography variant="h4" sx={{ textAlign: "center", mt: 4, mb: 4 }}>
@@ -41,6 +69,16 @@ import {
         </Typography>
   
         <TableContainer component={Paper}>
+          <Box padding={2}>
+            <Typography variant="subtitle2" gutterBottom >
+            Filter Employees
+          </Typography>
+          <Box display={"flex"} gap={2}>
+            <TextField name="firstName" value={filter.firstName} placeholder="First Name" variant="outlined" onChange={handleChange} />
+            <TextField name="lastName" value={filter.lastName} placeholder="Last Name" variant="outlined" onChange={handleChange} />
+            <Button size="large" variant="contained" onClick={() => getEmployees("filtered")}>Search</Button>
+          </Box>
+          </Box>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
